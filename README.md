@@ -93,11 +93,6 @@ diabetes-predictor/
 python --version
 ```
 
-**macOS/Linux (Terminal):**
-```bash
-python3 --version
-```
-
 Expected output: `Python 3.8.0` or higher
 
 If Python is not installed:
@@ -111,15 +106,6 @@ If Python is not installed:
 **Windows:**
 Download and install from [git-scm.com](https://git-scm.com/download/win)
 
-**macOS:**
-```bash
-brew install git
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt install -y git
-```
 
 **Verify Installation:**
 ```bash
@@ -151,12 +137,6 @@ python -m venv .venv
 ```cmd
 python -m venv .venv
 .venv\Scripts\activate.bat
-```
-
-**macOS/Linux (Bash/Zsh):**
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
 ```
 
 ✅ **Success**: Your shell prompt should show `(.venv)` at the beginning
@@ -309,8 +289,6 @@ Features:
 - 📊 Real-time prediction results
 - 📈 Probability visualization with progress bars
 - 📱 Mobile-friendly responsive design
-
-Access at: `http://localhost:5000`
 
 ### Training Models
 
