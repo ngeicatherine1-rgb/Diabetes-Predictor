@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diabetes Predictor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-predict {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-reset {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-reset:hover {
+            background: #e0e0e0;
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .result.positive {
+            background: #fee;
+            border: 1px solid #fcc;
+        }
+        
+        .result.negative {
+            background: #efe;
+            border: 1px solid #cfc;
+        }
+        
+        .result h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .result.positive h3 {
+            color: #c33;
+        }
+        
+        .result.negative h3 {
+            color: #3c3;
+        }
+        
+        .result-item {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .result-item strong {
+            color: #333;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .loading {
+            text-align: center;
+            display: none;
+            margin: 20px 0;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            color: #c33;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Diabetes Predictor</h1>
+            <p>Enter patient health metrics to predict diabetes risk</p>
+        </div>
+        
+        <form id="predictionForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pregnancies">Pregnancies</label>
+                    <input type="number" id="pregnancies" name="Pregnancies" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="glucose">Glucose (mg/dL)</label>
+                    <input type="number" id="glucose" name="Glucose" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="bloodpressure">Blood Pressure (mmHg)</label>
+                    <input type="number" id="bloodpressure" name="BloodPressure" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="skinthickness">Skin Thickness (mm)</label>
+                    <input type="number" id="skinthickness" name="SkinThickness" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="insulin">Insulin (mu U/ml)</label>
+                    <input type="number" id="insulin" name="Insulin" step="0.1" required>
+                </div>
+                <div class="form-group">
+                    <label for="bmi">BMI (kg/m²)</label>
+                    <input type="number" id="bmi" name="BMI" step="0.1" required>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="diabetespedigreefunction">Diabetes Pedigree Function</label>
+                    <input type="number" id="diabetespedigreefunction" name="DiabetesPedigreeFunction" step="0.001" required>
+                </div>
+                <div class="form-group">
+                    <label for="age">Age (years)</label>
+                    <input type="number" id="age" name="Age" step="1" required>
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button type="submit" class="btn-predict">Predict</button>
+                <button type="reset" class="btn-reset">Clear</button>
+            </div>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="result" id="result">
+            <h3 id="resultTitle"></h3>
+            <div class="result-item">
+                <strong>Confidence:</strong> <span id="confidence"></span>
+            </div>
+            <div class="result-item">
+                <strong>Diabetes Probability:</strong> <span id="diabetesProbability"></span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="diabetesBar"></div>
+                </div>
+            </div>
+            <div class="result-item">
+                <strong>No Diabetes Probability:</strong> <span id="noDiabetesProbability"></span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="noDiabetesBar" style="background: #ddd;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = {};
+            
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value);
+            });
+            
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const result = document.getElementById('result');
+            
+            loading.classList.add('show');
+            error.classList.remove('show');
+            result.classList.remove('show');
+            
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Prediction failed');
+                }
+                
+                const resultData = await response.json();
+                displayResult(resultData);
+            } catch (err) {
+                error.textContent = 'Error: ' + err.message;
+                error.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+        
+        function displayResult(data) {
+            const result = document.getElementById('result');
+            const resultTitle = document.getElementById('resultTitle');
+            const confidence = document.getElementById('confidence');
+            const diabetesProbability = document.getElementById('diabetesProbability');
+            const noDiabetesProbability = document.getElementById('noDiabetesProbability');
+            const diabetesBar = document.getElementById('diabetesBar');
+            const noDiabetesBar = document.getElementById('noDiabetesBar');
+            
+            const isPredictedDiabetic = data.prediction === 1;
+            const diabetesProb = (data.diabetes_probability * 100).toFixed(2);
+            const nodiabetesProb = (data.no_diabetes_probability * 100).toFixed(2);
+            
+            resultTitle.textContent = isPredictedDiabetic ? 
+                '⚠️ POSITIVE (Diabetes Likely)' : 
+                '✅ NEGATIVE (No Diabetes)';
+            
+            confidence.textContent = (data.confidence * 100).toFixed(2) + '%';
+            diabetesProbability.textContent = diabetesProb + '%';
+            noDiabetesProbability.textContent = nodiabetesProb + '%';
+            
+            diabetesBar.style.width = diabetesProb + '%';
+            noDiabetesBar.style.width = nodiabetesProb + '%';
+            
+            result.classList.remove('positive', 'negative');
+            result.classList.add(isPredictedDiabetic ? 'positive' : 'negative');
+            result.classList.add('show');
+        }
+    </script>
+</body>
+</html>

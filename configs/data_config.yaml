@@ -1,0 +1,30 @@
+# Data Configuration
+
+paths:
+  raw_data: data/raw/diabetes.csv
+  processed_data: data/processed/diabetes_processed.csv
+  train_data: data/processed/train_data.csv
+  test_data: data/processed/test_data.csv
+
+preprocessing:
+  test_size: 0.2
+  random_state: 42
+  scaling: standardscaler  # standardscaler, minmaxscaler
+  handle_missing: mean     # mean, median, drop
+
+feature_engineering:
+  create_bmi_categories: true
+  create_age_groups: true
+  normalize_glucose: true
+
+columns:
+  features:
+    - Pregnancies
+    - Glucose
+    - BloodPressure
+    - SkinThickness
+    - Insulin
+    - BMI
+    - DiabetesPedigreeFunction
+    - Age
+  target: Outcome

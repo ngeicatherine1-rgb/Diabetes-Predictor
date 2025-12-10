@@ -1,0 +1,25 @@
+# Application Configuration
+
+flask:
+  host: 127.0.0.1
+  port: 5000
+  debug: true
+  threaded: true
+
+streamlit:
+  theme: light  # light or dark
+  wide_mode: false
+
+models:
+  default_model: random_forest
+  model_path: models/
+  scaler_path: models/scaler.pkl
+
+logging:
+  level: INFO
+  log_file: logs/app.log
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+prediction:
+  confidence_threshold: 0.5
+  return_probabilities: true
