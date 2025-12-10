@@ -165,8 +165,7 @@ Contributions are welcome! Please:
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Author
-
-Your Name
+Catherine Ngei
 
 ## Acknowledgments
 
