@@ -77,10 +77,20 @@ def preprocess_data(data, target_column='Outcome', test_size=0.2, random_state=4
     X = data.drop(columns=[target_column])
     y = data[target_column]
     
-    # Split data
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=test_size, random_state=random_state, stratify=y
-    )
+    # Split data. Try stratified split first; if dataset is too small or
+    # stratification fails, fall back to a non-stratified split.
+    try:
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=random_state, stratify=y
+        )
+    except ValueError as e:
+        logger.warning(
+            "Stratified train/test split failed (%s). Falling back to non-stratified split.",
+            e,
+        )
+        X_train, X_test, y_train, y_test = train_test_split(
+            X, y, test_size=test_size, random_state=random_state, stratify=None
+        )
     
     # Scale features
     scaler = StandardScaler()
