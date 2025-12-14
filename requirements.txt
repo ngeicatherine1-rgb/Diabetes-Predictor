@@ -10,6 +10,8 @@ plotly==5.18.0
 
 # Web Framework (choose one)
 flask==3.0.0
+gunicorn==21.2.0
+python-dotenv==1.0.0
 # streamlit==1.29.0
 
 # Model Persistence
