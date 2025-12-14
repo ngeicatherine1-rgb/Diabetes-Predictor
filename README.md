@@ -93,33 +93,13 @@ diabetes-predictor/
 python --version
 ```
 
-**macOS/Linux (Terminal):**
-```bash
-python3 --version
-```
-
 Expected output: `Python 3.8.0` or higher
-
-If Python is not installed:
-- **Windows**: Download from [python.org](https://www.python.org/downloads/) and ensure "Add Python to PATH" is checked
-- **macOS**: `brew install python` or download from [python.org](https://www.python.org/downloads/)
-- **Linux (Ubuntu/Debian)**: `sudo apt install -y python3 python3-pip`
-- **Linux (CentOS/RHEL)**: `sudo yum install -y python3 python3-pip`
 
 ### Step 2: Install Git
 
 **Windows:**
 Download and install from [git-scm.com](https://git-scm.com/download/win)
 
-**macOS:**
-```bash
-brew install git
-```
-
-**Linux (Ubuntu/Debian):**
-```bash
-sudo apt install -y git
-```
 
 **Verify Installation:**
 ```bash
@@ -152,14 +132,6 @@ python -m venv .venv
 python -m venv .venv
 .venv\Scripts\activate.bat
 ```
-
-**macOS/Linux (Bash/Zsh):**
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-✅ **Success**: Your shell prompt should show `(.venv)` at the beginning
 
 ### Step 5: Upgrade pip and Install Dependencies
 
@@ -230,7 +202,7 @@ tests/test_predict.py::test_make_prediction PASSED
 
 ## Quick Start Guide
 
-### Option 1: Jupyter Notebook Workflow (Recommended for Learning)
+### Option 1: Jupyter Notebook Workflow
 
 ```bash
 jupyter notebook
@@ -241,7 +213,7 @@ Then open these notebooks in order:
 2. `notebooks/preprocessing.ipynb` - Feature engineering and scaling
 3. `notebooks/modeling.ipynb` - Model training and evaluation
 
-### Option 2: CLI Prediction (After Training)
+### Option 2: CLI Prediction 
 
 ```bash
 python app/cli.py --input "6,148,72,35,0,33.6,0.627,50"
@@ -257,7 +229,7 @@ python app/web_app.py
 
 Then visit `http://localhost:5000` in your browser
 
-### Step 8: Train Models (if using scripts)
+### Step 8: Train Models 
 
 ```bash
 # Train all models with default config
@@ -309,8 +281,6 @@ Features:
 - 📊 Real-time prediction results
 - 📈 Probability visualization with progress bars
 - 📱 Mobile-friendly responsive design
-
-Access at: `http://localhost:5000`
 
 ### Training Models
 
