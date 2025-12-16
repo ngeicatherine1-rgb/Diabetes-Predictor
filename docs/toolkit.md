@@ -15,10 +15,15 @@ This document provides comprehensive information about the tools, libraries, and
 ## Core Libraries
 
 ### Machine Learning
-- **scikit-learn**: Primary ML library for models, preprocessing, and evaluation
-  - Models: LogisticRegression, RandomForestClassifier
-  - Preprocessing: StandardScaler, train_test_split
-  - Metrics: accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+- **scikit-learn** (v1.3.2): Primary ML library for models, preprocessing, and evaluation
+  - **Models**:
+    - `LogisticRegression`: Linear classifier with L-BFGS solver, max_iter=1000, balanced class weights
+    - `RandomForestClassifier`: Ensemble of 100 trees, max_depth=10, balanced class weights
+  - **Preprocessing**:
+    - `StandardScaler`: Feature normalization (mean=0, std=1) - saved to `models/scaler.pkl`
+    - `train_test_split`: 80/20 split with stratification for balanced classes
+  - **Metrics**: accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+  - **Feature Set**: 8 medical features (Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age)
 
 ### Data Processing
 - **pandas**: Data manipulation and analysis
@@ -32,9 +37,16 @@ This document provides comprehensive information about the tools, libraries, and
 ## Development Tools
 
 ### Web Framework
-- **Flask**: Lightweight web framework for the prediction API
-  - Routes: `/` (home), `/predict` (prediction endpoint)
+- **Flask** (v3.0.0): Lightweight web framework for the prediction API
+  - **Routes**:
+    - `/` - Home page with prediction form (`app/templates/index.html`)
+    - `/predict` - POST endpoint for diabetes predictions (JSON input/output)
+    - `/health` - Health check endpoint for monitoring
   - Template rendering with Jinja2
+  - Configuration via `configs/app_config.yaml`
+  - Model loading on startup for fast predictions
+- **gunicorn** (v21.2.0): Production WSGI server for Flask deployment
+- **python-dotenv** (v1.0.0): Environment variable management
 
 ### Interactive Development
 - **Jupyter Notebook**: Interactive development environment
@@ -103,35 +115,46 @@ pylint src/
 ## Configuration Management
 
 ### YAML Configuration
-- **PyYAML**: YAML file parsing
+- **PyYAML**: YAML file parsing (via `yaml.safe_load()`)
 - Configuration files in `configs/`:
   - `model_config.yaml`: Model hyperparameters
-  - `data_config.yaml`: Data paths and settings
-  - `app_config.yaml`: Application configuration
+    - Logistic Regression: max_iter, solver, class_weight
+    - Random Forest: n_estimators, max_depth, min_samples_split, min_samples_leaf
+  - `data_config.yaml`: Data paths and preprocessing settings
+  - `app_config.yaml`: Flask application settings (host, port, debug, model paths)
 
 ## Project Structure Tools
 
 ### Path Management
 - **pathlib**: Modern path handling (Python 3.4+)
 - Cross-platform path operations
+- Used in `src/train_model.py` for creating model directories
 
 ### Logging
 - **logging**: Built-in Python logging module
 - Structured log files in `logs/` directory
+- Configured in all modules (`src/`, `app/`) for debugging and monitoring
+- Log levels: INFO for operations, ERROR for exceptions
 
 ## Model Persistence
 
-### pickle
-- Model serialization and deserialization
-- Saving trained models to `models/` directory
-- Loading models for predictions
+### joblib
+- Model serialization and deserialization (preferred over pickle for scikit-learn models)
+- Saving trained models to `models/` directory:
+  - `models/random_forest.pkl` - Random Forest classifier
+  - `models/logistic_reg.pkl` - Logistic Regression classifier
+  - `models/scaler.pkl` - StandardScaler for feature normalization
+- Loading models for predictions via `src/train_model.py` and `src/predict.py`
+- More efficient than pickle for numpy arrays used in scikit-learn
 
 ## Command-Line Interface
 
 ### argparse
-- CLI argument parsing
-- User-friendly command-line interface
-- Input validation
+- CLI argument parsing in `app/cli.py`
+- User-friendly command-line interface for predictions
+- Input validation for 8 feature values
+- **Usage**: `python app/cli.py --input "6,148,72,35,0,33.6,0.627,50"`
+- Supports custom model and scaler paths via `--model` and `--scaler` flags
 
 ## Version Control
 
@@ -162,8 +185,16 @@ pylint src/
 ## Utilities
 
 ### Scripts
-- `scripts/check_env.ps1`: Environment verification (PowerShell)
-- `deploy.sh`: Deployment automation
+- `scripts/check_env.ps1`: Environment verification (PowerShell) - checks Python version, dependencies, and project structure
+- `deploy.sh`: Deployment automation script for production deployment
+
+### Data Processing Pipeline
+- **Data Loading**: `src/data_loader.py`
+  - `load_data()`: Load CSV from `data/raw/diabetes.csv`
+  - `handle_missing_values()`: Fill missing values using mean/median/drop methods
+  - `preprocess_data()`: Complete preprocessing pipeline
+  - `load_and_preprocess_data()`: Combined load and preprocess function
+- **Dataset**: Pima Indians Diabetes Dataset (768 samples, 8 features, binary classification)
 
 ## Recommended IDE/Editor
 
@@ -173,12 +204,40 @@ pylint src/
   - Debugging support
   - Jupyter notebook support
 
+## Diabetes Predictor Specific Details
+
+### Dataset Features
+The model uses 8 medical features to predict diabetes:
+1. **Pregnancies**: Number of times pregnant
+2. **Glucose**: Plasma glucose concentration (mg/dL)
+3. **BloodPressure**: Diastolic blood pressure (mm Hg)
+4. **SkinThickness**: Triceps skin fold thickness (mm)
+5. **Insulin**: 2-Hour serum insulin (mu U/ml)
+6. **BMI**: Body mass index (kg/m²)
+7. **DiabetesPedigreeFunction**: Diabetes pedigree function
+8. **Age**: Age in years
+
+### Model Performance
+- **Random Forest**: ~81.8% accuracy (primary model)
+- **Logistic Regression**: ~79.2% accuracy (baseline model)
+- Models saved in `models/` directory after training
+- Feature importance: Glucose (28.5%), BMI (19.2%), Age (15.7%) are top predictors
+
+### Prediction Workflow
+1. Load trained model and scaler from `models/` directory
+2. Accept 8 feature values (list, dict, or array)
+3. Scale features using saved StandardScaler
+4. Make prediction (0 = No Diabetes, 1 = Diabetes)
+5. Return probability scores and confidence percentage
+
 ## Additional Resources
 
 ### Documentation
-- Project README: `README.md`
-- Deployment Guide: `DEPLOYMENT_GUIDE.md`
-- Quick Start: `DEPLOY_QUICK_START.md`
+- Project README: `README.md` - Complete setup and usage guide
+- Deployment Guide: `DEPLOYMENT_GUIDE.md` - Production deployment instructions
+- Quick Start: `DEPLOY_QUICK_START.md` - Fast deployment guide
+- Code Summary: `CODE_SUMMARY.md` - Project structure overview
+- Working Examples: `WORKING_CODE_EXAMPLES.md` - Code samples and outputs
 
 ### External Resources
 - [scikit-learn Documentation](https://scikit-learn.org/stable/)
