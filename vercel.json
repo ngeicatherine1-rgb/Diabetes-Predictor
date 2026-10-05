@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "app/web_app.py",
+      "src": "app/__init__.py",
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.12"
@@ -12,7 +12,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "app/web_app.py"
+      "dest": "app/__init__.py"
     }
   ]
 }
