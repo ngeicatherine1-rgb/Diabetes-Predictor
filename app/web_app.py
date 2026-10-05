@@ -3,25 +3,32 @@ Flask web application for diabetes prediction
 """
 
 import logging
+from pathlib import Path
+
 import yaml
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, jsonify, render_template, request
+
 from src.predict import load_model_and_scaler, make_prediction
 
+ROOT = Path(__file__).resolve().parents[1]
+CONFIG_PATH = ROOT / "configs" / "app_config.yaml"
+MODEL_DIR = ROOT / "models"
+
 # Initialize Flask app
-app = Flask(__name__, template_folder="templates")
+app = Flask(__name__, template_folder=str(ROOT / "app" / "templates"))
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Load configuration
-with open("configs/app_config.yaml", "r") as f:
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
     config = yaml.safe_load(f)
 
 # Load model and scaler
 model, scaler = load_model_and_scaler(
-    config["models"]["model_path"] + "random_forest.pkl",
-    config["models"]["scaler_path"],
+    str(MODEL_DIR / "random_forest.pkl"),
+    str(MODEL_DIR / "scaler.pkl"),
 )
 
 FEATURE_NAMES = [
@@ -48,21 +55,16 @@ def predict():
     try:
         data = request.get_json()
 
-        # Validate input
         if not all(feature in data for feature in FEATURE_NAMES):
             return jsonify({"error": "Missing features"}), 400
 
-        # Extract values
         input_values = [float(data[feature]) for feature in FEATURE_NAMES]
-
-        # Make prediction
         result = make_prediction(input_values, model, scaler, FEATURE_NAMES)
-
         return jsonify(result)
 
-    except Exception as e:
-        logger.error(f"Prediction error: {e}")
-        return jsonify({"error": str(e)}), 500
+    except Exception as exc:
+        logger.error(f"Prediction error: {exc}")
+        return jsonify({"error": str(exc)}), 500
 
 
 @app.route("/health")

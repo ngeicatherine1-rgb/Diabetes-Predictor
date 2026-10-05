@@ -59,6 +59,9 @@ Issues = "https://github.com/yourusername/diabetes-predictor/issues"
 where = ["."]
 include = ["src*"]
 
+[tool.vercel]
+entrypoint = "app.web_app:app"
+
 [tool.black]
 line-length = 88
 target-version = ['py38', 'py39', 'py310', 'py311']
