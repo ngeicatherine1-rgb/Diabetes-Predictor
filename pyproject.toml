@@ -61,7 +61,7 @@ where = ["."]
 include = ["src*"]
 
 [tool.vercel]
-entrypoint = "app:app"
+entrypoint = "app.web_app:app"
 
 [tool.black]
 line-length = 88
